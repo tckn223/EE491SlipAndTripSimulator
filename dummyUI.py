@@ -1,62 +1,9 @@
 import sys
 import Database
+import PatientInformationWindows
 import CustomSimulationWindows
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow, QLabel
 from PyQt5.QtCore import Qt
-
-class NewPatientWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.title = 'New Patient'
-        self.left = 10
-        self.top = 10
-        self.width = 300
-        self.height = 220
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-
-        label = QLabel('You clicked New Patient', self)
-        label.adjustSize()
-        label.move(100, 70)
-
-        button = QPushButton('OK', self)
-        button.move(100, 120)
-        button.clicked.connect(self.close_window)
-
-        self.show()
-
-    def close_window(self):
-        self.close()
-
-class ExistingPatientWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.title = 'Existing Patient'
-        self.left = 10
-        self.top = 10
-        self.width = 300
-        self.height = 220
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-
-        label = QLabel('You clicked Existing Patient', self)
-        label.adjustSize()
-        label.move(100, 70)
-
-        button = QPushButton('OK', self)
-        button.move(100, 120)
-        button.clicked.connect(self.close_window)
-
-        self.show()
-
-    def close_window(self):
-        self.close()
 
 class App(QWidget):
 
@@ -102,12 +49,22 @@ class App(QWidget):
         self.show()
 
     def new_patient_click(self):
-        self.new_patient_window = NewPatientWindow()
+        self.new_patient_window = PatientInformationWindows.CreatePatientWindow()
+        self.new_patient_window.new_patient.connect(self.new_patient_handler)
         self.new_patient_window.show()
 
+    def new_patient_handler(self, subject_id, new_patient):
+        self.debug_text.setText(subject_id + "\n" + str(new_patient))
+        Database.patient_information[subject_id] = new_patient
+        Database.write_to_database()
+
     def existing_patient_click(self):
-        self.existing_patient_window = ExistingPatientWindow()
+        self.existing_patient_window = PatientInformationWindows.LoadPatientWindow(Database.patient_information)
+        self.existing_patient_window.selected_patient.connect(self.existing_patient_handler)
         self.existing_patient_window.show()
+
+    def existing_patient_handler(self, subject_id):
+        self.debug_text.setText(subject_id + "\n" + str(Database.patient_information[subject_id]))
 
     def create_simulation_click(self):
         self.create_simulation_window = CustomSimulationWindows.CreateSimulationWindow()
