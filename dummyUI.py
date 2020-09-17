@@ -1,11 +1,17 @@
 import sys
+from datetime import datetime
 import Database
+import MainWindowErrorWindows
 import PatientInformationWindows
+import PatientNotesWindows
 import CustomSimulationWindows
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow, QLabel
 from PyQt5.QtCore import Qt
 
 class App(QWidget):
+
+    subject_id = ''
+    simulation = {}
 
     def __init__(self):
         super().__init__()
@@ -13,7 +19,7 @@ class App(QWidget):
         self.left = 10
         self.top = 10
         self.width = 900
-        self.height = 280
+        self.height = 300
         self.initUI()
 
     def initUI(self):
@@ -28,6 +34,14 @@ class App(QWidget):
         existing_patient.setGeometry(100, 120, 100, 25)
         existing_patient.clicked.connect(self.existing_patient_click)
 
+        add_patient_notes = QPushButton('Add Patient Notes', self)
+        add_patient_notes.setGeometry(100, 170, 100, 25)
+        add_patient_notes.clicked.connect(self.add_patient_notes_click)
+
+        view_patient_notes = QPushButton('View Patient Notes', self)
+        view_patient_notes.setGeometry(100, 220, 100, 25)
+        view_patient_notes.clicked.connect(self.view_patient_notes_click)
+
         create_simulation = QPushButton('Create Simulation', self)
         create_simulation.setGeometry(250, 70, 100, 25)
         create_simulation.clicked.connect(self.create_simulation_click)
@@ -41,9 +55,10 @@ class App(QWidget):
         self.debug_text.setStyleSheet('background-color: white')
         self.debug_text.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.debug_text.setIndent(4)
+        self.debug_text.setWordWrap(True)
 
         button = QPushButton('Exit', self)
-        button.setGeometry(100, 170, 100, 25)
+        button.setGeometry(250, 170, 100, 25)
         button.clicked.connect(self.close_window)
 
         self.show()
@@ -65,6 +80,34 @@ class App(QWidget):
 
     def existing_patient_handler(self, subject_id):
         self.debug_text.setText(subject_id + "\n" + str(Database.patient_information[subject_id]))
+        self.subject_id = subject_id
+
+    def add_patient_notes_click(self):
+        if (self.subject_id == ''):
+            self.error_window = MainWindowErrorWindows.SelectAPatientError()
+            self.error_window.show()
+        else:
+            self.add_patient_notes_window = PatientNotesWindows.AddPatientNotesWindow(self.subject_id)
+            self.add_patient_notes_window.new_notes.connect(self.add_patient_notes_handler)
+            self.add_patient_notes_window.show()
+
+    def add_patient_notes_handler(self, notes):
+        self.debug_text.setText(notes)
+        if self.subject_id not in Database.patient_notes.keys():
+            Database.patient_notes[self.subject_id] = {}
+        Database.patient_notes[self.subject_id][datetime.now().strftime('%m/%d/%Y, %H:%M:%S')] = notes
+        Database.write_to_database()
+
+    def view_patient_notes_click(self):
+        if (self.subject_id == ''):
+            self.error_window = MainWindowErrorWindows.SelectAPatientError()
+            self.error_window.show()
+        elif (self.subject_id not in Database.patient_notes.keys()):
+            self.error_window = MainWindowErrorWindows.NoPatientNotesError()
+            self.error_window.show()
+        else:
+            self.view_patient_notes_window = PatientNotesWindows.ViewPatientNotesWindow(self.subject_id, Database.patient_notes[self.subject_id])
+            self.view_patient_notes_window.show()
 
     def create_simulation_click(self):
         self.create_simulation_window = CustomSimulationWindows.CreateSimulationWindow()
@@ -83,6 +126,7 @@ class App(QWidget):
 
     def load_simulation_handler(self, name):
         self.debug_text.setText(name + "\n" + str(Database.custom_simulation[name]))
+        self.simulation = Database.custom_simulation[name]
 
     def close_window(self):
         self.close()

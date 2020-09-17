@@ -51,7 +51,7 @@ class CreateSimulationWindow(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         # Name
-        self.name_label = QLabel('Name:', self)
+        self.name_label = QLabel('Name', self)
         self.name_label.setGeometry(20, 20, label_width, label_text_height)
         self.name_label.setAlignment(Qt.AlignRight | Qt.AlignCenter)
 
