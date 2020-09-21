@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 class CreateSimulationWindowError(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.title = 'Load Simulation'
+        self.title = 'Create Simulation'
         self.left = 10
         self.top = 10
         self.width = 250
@@ -17,7 +17,7 @@ class CreateSimulationWindowError(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        label = QLabel('ERROR: Please fill in every field.', self)
+        label = QLabel('ERROR: Please fill in every required field.', self)
         label.adjustSize()
         label.move(50, 50)
 
@@ -51,7 +51,7 @@ class CreateSimulationWindow(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         # Name
-        self.name_label = QLabel('Name:', self)
+        self.name_label = QLabel('Name', self)
         self.name_label.setGeometry(20, 20, label_width, label_text_height)
         self.name_label.setAlignment(Qt.AlignRight | Qt.AlignCenter)
 
