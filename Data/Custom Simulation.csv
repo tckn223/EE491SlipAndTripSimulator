@@ -1,8 +1,9 @@
-Name,Distance (m),Duration (s),Speed (m/s),Acceleration (m/s^2)
-Test,1,2,3,4
-Test 2,4,3,2,1
-Test 3,1,2,3,4
-New Simulation,1,3,5,7
-Simulation 20,4,0.1,2,4
-New Simulation 3,3,2,1,10
-Simulation 3,1,2,3,4
+Name,Distance (m),Speed (m/s),"Direction (Forward, Backward, Right, Left)"
+Test,1,3,1
+Test 2,4,2,2
+Test 3,1,3,3
+New Simulation,1,5,4
+Simulation 20,4,2,5
+New Simulation 3,3,1,6
+Simulation 3,1,3,7
+Test 55,3,5,2
