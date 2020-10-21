@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
 from PyQt5.QtWidgets import *
+import Database
 
 ## ==> SPLASH SCREEN
 from SplashScreen import Ui_SplashScreen
@@ -29,12 +30,32 @@ class MainWindow(QMainWindow):
         self.ui.Patient.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.Patient_Information))
         self.ui.Platform.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.Platform_Running))
         self.ui.Add_Patient.clicked.connect(self.Add_Patient)
+
     def Add_Patient(self):
-        Add_Patient_Screen = QDialog()
-        Add_Patient_Screen.ui = Ui_Add_Patient_Screen()
-        Add_Patient_Screen.ui.setupUi(Add_Patient_Screen)
-        Add_Patient_Screen.exec_()
-        
+        self.Add_Patient_Screen = QDialog()
+        self.Add_Patient_Screen.ui = Ui_Add_Patient_Screen()
+        self.Add_Patient_Screen.ui.setupUi(self.Add_Patient_Screen)
+        self.Add_Patient_Screen.ui.Add_Patient_2.clicked.connect(self.Write_New_Patient)
+        self.Add_Patient_Screen.exec_()
+    def Write_New_Patient(self):
+        if (self.Add_Patient_Screen.ui.genderLineEdit.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_2.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_3.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_4.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_5.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_6.text() != ''):
+            Subject_ID = self.Add_Patient_Screen.ui.genderLineEdit.text()
+            New_Patient = {
+                self.Add_Patient_Screen.ui.genderLabel.text() : self.Add_Patient_Screen.ui.genderLineEdit_2.text(),
+                self.Add_Patient_Screen.ui.heightLabel_2.text() : self.Add_Patient_Screen.ui.genderLineEdit_3.text(),
+                self.Add_Patient_Screen.ui.ageLabel_2.text() : self.Add_Patient_Screen.ui.genderLineEdit_4.text(),
+                self.Add_Patient_Screen.ui.shoeSizeLabel.text() : self.Add_Patient_Screen.ui.genderLineEdit_5.text(),
+                self.Add_Patient_Screen.ui.weightLabel_2.text() : self.Add_Patient_Screen.ui.genderLineEdit_6.text()
+            }
+            Database.patient_information[Subject_ID] = New_Patient
+            Database.write_to_database()
+            self.Add_Patient_Screen.close()
+
 # SPLASH SCREEN
 class SplashScreen(QMainWindow):
     def __init__(self):
@@ -96,6 +117,7 @@ class SplashScreen(QMainWindow):
 
 
 if __name__ == "__main__":
+    Database.load_database()
     app = QApplication(sys.argv)
     window = SplashScreen()
     sys.exit(app.exec_())
