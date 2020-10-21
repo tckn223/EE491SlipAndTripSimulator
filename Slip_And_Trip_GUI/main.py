@@ -31,6 +31,15 @@ class MainWindow(QMainWindow):
         self.ui.Platform.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.Platform_Running))
         self.ui.Add_Patient.clicked.connect(self.Add_Patient)
 
+        # Populate lists
+        for patient in Database.patient_information:
+            self.ui.listWidget.addItem(patient)
+        self.ui.listWidget.itemSelectionChanged.connect(self.Update_Patient_Fields)
+
+        for simulation in Database.custom_simulation:
+            self.ui.listWidget_2.addItem(simulation)
+
+    # ADD PATIENT WINDOW
     def Add_Patient(self):
         self.Add_Patient_Screen = QDialog()
         self.Add_Patient_Screen.ui = Ui_Add_Patient_Screen()
@@ -55,6 +64,15 @@ class MainWindow(QMainWindow):
             Database.patient_information[Subject_ID] = New_Patient
             Database.write_to_database()
             self.Add_Patient_Screen.close()
+
+    # PATIENT TAB
+    def Update_Patient_Fields(self):
+        patient = self.ui.listWidget.currentItem().text()
+        self.ui.genderLineEdit.setText(Database.patient_information[patient][self.ui.genderLabel.text()])
+        self.ui.heightLineEdit.setText(Database.patient_information[patient][self.ui.heightLabel.text()])
+        self.ui.ageLineEdit.setText(Database.patient_information[patient][self.ui.ageLabel.text()])
+        self.ui.shoeSizeLineEdit.setText(Database.patient_information[patient][self.ui.shoeSizeLabel.text()])
+        self.ui.weightLineEdit.setText(Database.patient_information[patient][self.ui.weightLabel.text()])
 
 # SPLASH SCREEN
 class SplashScreen(QMainWindow):

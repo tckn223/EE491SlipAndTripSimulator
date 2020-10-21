@@ -597,10 +597,10 @@ class Ui_MainWindow(object):
         self.listWidget.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><br/></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.genderLabel.setText(QCoreApplication.translate("MainWindow", u"Gender", None))
-        self.heightLabel.setText(QCoreApplication.translate("MainWindow", u"Height", None))
+        self.heightLabel.setText(QCoreApplication.translate("MainWindow", u"Height (in)", None))
         self.ageLabel.setText(QCoreApplication.translate("MainWindow", u"Age", None))
         self.shoeSizeLabel.setText(QCoreApplication.translate("MainWindow", u"Shoe Size", None))
-        self.weightLabel.setText(QCoreApplication.translate("MainWindow", u"Weight", None))
+        self.weightLabel.setText(QCoreApplication.translate("MainWindow", u"Weight (lbs)", None))
         self.label.setText("")
         self.Save_Patient_Info.setText(QCoreApplication.translate("MainWindow", u"Save Patient Information", None))
         self.Save_Patient_Info_2.setText(QCoreApplication.translate("MainWindow", u"Delete Patient Information", None))
@@ -617,4 +617,3 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"Delete Simulation", None))
         self.Save_Patient_Info_3.setText(QCoreApplication.translate("MainWindow", u"Save Simulation Information", None))
     # retranslateUi
-
