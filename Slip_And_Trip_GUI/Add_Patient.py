@@ -221,11 +221,10 @@ class Ui_Add_Patient_Screen(object):
     def retranslateUi(self, Add_Patient_Screen):
         Add_Patient_Screen.setWindowTitle(QCoreApplication.translate("Add_Patient_Screen", u"Dialog", None))
         self.genderLabel.setText(QCoreApplication.translate("Add_Patient_Screen", u"Gender", None))
-        self.heightLabel_2.setText(QCoreApplication.translate("Add_Patient_Screen", u"Height", None))
+        self.heightLabel_2.setText(QCoreApplication.translate("Add_Patient_Screen", u"Height (in)", None))
         self.ageLabel_2.setText(QCoreApplication.translate("Add_Patient_Screen", u"Age", None))
         self.shoeSizeLabel.setText(QCoreApplication.translate("Add_Patient_Screen", u"Shoe Size", None))
-        self.weightLabel_2.setText(QCoreApplication.translate("Add_Patient_Screen", u"Weight", None))
+        self.weightLabel_2.setText(QCoreApplication.translate("Add_Patient_Screen", u"Weight (lbs)", None))
         self.weightLabel.setText(QCoreApplication.translate("Add_Patient_Screen", u"Subject ID", None))
         self.Add_Patient_2.setText(QCoreApplication.translate("Add_Patient_Screen", u"Add Patient", None))
     # retranslateUi
-

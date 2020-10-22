@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
 from PyQt5.QtWidgets import *
+import Database
 
 ## ==> SPLASH SCREEN
 from SplashScreen import Ui_SplashScreen
@@ -29,12 +30,89 @@ class MainWindow(QMainWindow):
         self.ui.Patient.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.Patient_Information))
         self.ui.Platform.clicked.connect(lambda: self.ui.stackedWidget.setCurrentWidget(self.ui.Platform_Running))
         self.ui.Add_Patient.clicked.connect(self.Add_Patient)
+        self.ui.Save_Patient_Info.clicked.connect(self.Save_Patient)
+        self.ui.Save_Patient_Info_2.clicked.connect(self.Delete_Patient)
+
+        # Populate lists
+        self.Reload_Lists()
+        self.ui.listWidget.itemSelectionChanged.connect(self.Update_Patient_Fields)
+
+    # ADD PATIENT WINDOW
     def Add_Patient(self):
-        Add_Patient_Screen = QDialog()
-        Add_Patient_Screen.ui = Ui_Add_Patient_Screen()
-        Add_Patient_Screen.ui.setupUi(Add_Patient_Screen)
-        Add_Patient_Screen.exec_()
-        
+        self.Add_Patient_Screen = QDialog()
+        self.Add_Patient_Screen.ui = Ui_Add_Patient_Screen()
+        self.Add_Patient_Screen.ui.setupUi(self.Add_Patient_Screen)
+        self.Add_Patient_Screen.ui.Add_Patient_2.clicked.connect(self.Write_New_Patient)
+        self.Add_Patient_Screen.exec_()
+    def Write_New_Patient(self):
+        if (self.Add_Patient_Screen.ui.genderLineEdit.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_2.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_3.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_4.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_5.text() != '') and \
+        (self.Add_Patient_Screen.ui.genderLineEdit_6.text() != ''):
+            Subject_ID = self.Add_Patient_Screen.ui.genderLineEdit.text()
+            New_Patient = {
+                self.Add_Patient_Screen.ui.genderLabel.text() : self.Add_Patient_Screen.ui.genderLineEdit_2.text(),
+                self.Add_Patient_Screen.ui.heightLabel_2.text() : self.Add_Patient_Screen.ui.genderLineEdit_3.text(),
+                self.Add_Patient_Screen.ui.ageLabel_2.text() : self.Add_Patient_Screen.ui.genderLineEdit_4.text(),
+                self.Add_Patient_Screen.ui.shoeSizeLabel.text() : self.Add_Patient_Screen.ui.genderLineEdit_5.text(),
+                self.Add_Patient_Screen.ui.weightLabel_2.text() : self.Add_Patient_Screen.ui.genderLineEdit_6.text()
+            }
+            Database.patient_information[Subject_ID] = New_Patient
+            Database.write_to_database()
+            self.Reload_Lists()
+            self.Add_Patient_Screen.close()
+
+    # PATIENT TAB
+    def Save_Patient(self):
+        if (self.ui.genderLineEdit.text() != '') and \
+        (self.ui.heightLineEdit.text() != '') and \
+        (self.ui.ageLineEdit.text() != '') and \
+        (self.ui.shoeSizeLineEdit.text() != '') and \
+        (self.ui.weightLineEdit.text() != ''):
+            Subject_ID = self.ui.listWidget.currentItem().text()
+            Patient = {
+                self.ui.genderLabel.text() : self.ui.genderLineEdit.text(),
+                self.ui.heightLabel.text() : self.ui.heightLineEdit.text(),
+                self.ui.ageLabel.text() : self.ui.ageLineEdit.text(),
+                self.ui.shoeSizeLabel.text() : self.ui.shoeSizeLineEdit.text(),
+                self.ui.weightLabel.text() : self.ui.weightLineEdit.text()
+            }
+            Database.patient_information[Subject_ID] = Patient
+            Database.write_to_database()
+    def Delete_Patient(self):
+        Subject_ID = self.ui.listWidget.currentItem().text()
+        # Clear selection and line edits
+        self.ui.listWidget.clearSelection()
+        self.ui.genderLineEdit.setText("")
+        self.ui.heightLineEdit.setText("")
+        self.ui.ageLineEdit.setText("")
+        self.ui.shoeSizeLineEdit.setText("")
+        self.ui.weightLineEdit.setText("")
+        # Delete from local data structure and database
+        del Database.patient_information[Subject_ID]
+        Database.write_to_database()
+        self.Reload_Lists()
+    def Reload_Lists(self):
+        # Patient Information
+        self.ui.listWidget.clear()
+        for patient in Database.patient_information:
+            self.ui.listWidget.addItem(patient)
+        # Custom Simulation
+        self.ui.listWidget_2.clear()
+        for simulation in Database.custom_simulation:
+            self.ui.listWidget_2.addItem(simulation)
+    def Update_Patient_Fields(self):
+        patient = self.ui.listWidget.currentItem().text()
+        self.ui.genderLineEdit.setText(Database.patient_information[patient][self.ui.genderLabel.text()])
+        self.ui.heightLineEdit.setText(Database.patient_information[patient][self.ui.heightLabel.text()])
+        self.ui.ageLineEdit.setText(Database.patient_information[patient][self.ui.ageLabel.text()])
+        self.ui.shoeSizeLineEdit.setText(Database.patient_information[patient][self.ui.shoeSizeLabel.text()])
+        self.ui.weightLineEdit.setText(Database.patient_information[patient][self.ui.weightLabel.text()])
+
+
+
 # SPLASH SCREEN
 class SplashScreen(QMainWindow):
     def __init__(self):
@@ -96,6 +174,7 @@ class SplashScreen(QMainWindow):
 
 
 if __name__ == "__main__":
+    Database.load_database()
     app = QApplication(sys.argv)
     window = SplashScreen()
     sys.exit(app.exec_())
